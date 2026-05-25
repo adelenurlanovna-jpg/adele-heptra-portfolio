@@ -104,15 +104,10 @@
       linear-gradient(var(--bg), var(--bg)) padding-box,
       linear-gradient(123deg, #2A0220 7%, #E0008C 37%, #B228D9 72%, #FF4FB6 100%) border-box;
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-      0 0 36px rgba(255, 79, 182, 0.32),
-      0 0 80px rgba(178, 40, 217, 0.22),
-      0 12px 40px rgba(178, 40, 217, 0.22);
-    animation: projectCardGlow 3.6s ease-in-out infinite;
-    animation-play-state: paused;
-  }
-  .project-card-glow.is-active {
-    animation-play-state: running;
+      0 0 0 1px rgba(255, 255, 255, 0.10) inset,
+      0 0 44px rgba(255, 79, 182, 0.36),
+      0 0 96px rgba(178, 40, 217, 0.26),
+      0 12px 48px rgba(178, 40, 217, 0.26);
   }
   @keyframes projectCardGlow {
     0%, 100% {
@@ -1751,26 +1746,12 @@ function TypingBubble({ role, accent }) {
 
 function ProjectCard({ project, index, total, scrollContainerRef }) {
   const cardRef = useRef(null);
-  const [inView, setInView] = useState(false);
   const { scrollYProgress } = useScroll({
     target: cardRef,
     offset: ['start end', 'start start'],
   });
   const targetScale = 1 - (total - 1 - index) * 0.03;
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale]);
-
-  useEffect(() => {
-    if (!cardRef.current || typeof IntersectionObserver === 'undefined') {
-      setInView(true);
-      return;
-    }
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => setInView(e.isIntersecting)),
-      { threshold: 0.05 }
-    );
-    obs.observe(cardRef.current);
-    return () => obs.disconnect();
-  }, []);
 
   return (
     <div
@@ -1783,7 +1764,7 @@ function ProjectCard({ project, index, total, scrollContainerRef }) {
         className="w-full rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8"
       >
         <div
-          className={`project-card-glow rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8${inView ? ' is-active' : ''}`}
+          className="project-card-glow rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8"
         >
           {/* Top row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-6 md:mb-8">
