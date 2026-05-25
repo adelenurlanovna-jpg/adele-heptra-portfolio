@@ -109,6 +109,10 @@
       0 0 80px rgba(178, 40, 217, 0.22),
       0 12px 40px rgba(178, 40, 217, 0.22);
     animation: projectCardGlow 3.6s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .project-card-glow.is-active {
+    animation-play-state: running;
   }
   @keyframes projectCardGlow {
     0%, 100% {
@@ -1015,6 +1019,41 @@ const MARQUEE_URLS = [
   'assets/project-preview-1.mp4',
 ];
 
+function LazyVideo({ src, className }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const p = v.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+          } else {
+            v.pause();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(v);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      className={className}
+    />
+  );
+}
+
 function MarqueeTile({ src }) {
   const isLocal = !src.startsWith('http');
   const isVideo = /\.(mp4|webm|mov)$/i.test(src);
@@ -1024,13 +1063,8 @@ function MarqueeTile({ src }) {
       style={{ width: 420, height: 270 }}
     >
       {isVideo ? (
-        <video
+        <LazyVideo
           src={src}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
           className={`w-full h-full block ${isLocal ? 'object-contain' : 'object-cover'}`}
         />
       ) : (
@@ -1717,12 +1751,26 @@ function TypingBubble({ role, accent }) {
 
 function ProjectCard({ project, index, total, scrollContainerRef }) {
   const cardRef = useRef(null);
+  const [inView, setInView] = useState(false);
   const { scrollYProgress } = useScroll({
     target: cardRef,
     offset: ['start end', 'start start'],
   });
   const targetScale = 1 - (total - 1 - index) * 0.03;
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale]);
+
+  useEffect(() => {
+    if (!cardRef.current || typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => setInView(e.isIntersecting)),
+      { threshold: 0.05 }
+    );
+    obs.observe(cardRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <div
@@ -1735,7 +1783,7 @@ function ProjectCard({ project, index, total, scrollContainerRef }) {
         className="w-full rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8"
       >
         <div
-          className="project-card-glow rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8"
+          className={`project-card-glow rounded-[40px] sm:rounded-[50px] md:rounded-[60px] p-4 sm:p-6 md:p-8${inView ? ' is-active' : ''}`}
         >
           {/* Top row */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-6 md:mb-8">
@@ -1774,13 +1822,8 @@ function ProjectCard({ project, index, total, scrollContainerRef }) {
           >
             {project.preview ? (
               project.previewType === 'video' ? (
-                <video
+                <LazyVideo
                   src={project.preview}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
                   className="w-full h-full object-cover block"
                 />
               ) : project.previewType === 'iframe' ? (
