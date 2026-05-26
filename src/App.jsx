@@ -1464,6 +1464,7 @@ function ChatPreview({ script, agent }) {
 
       {/* Faux input bar */}
       <div
+        aria-hidden="true"
         className="px-4 sm:px-6 py-3 border-t flex items-center gap-3"
         style={{ borderColor: 'rgba(215,226,234,0.08)' }}
       >
@@ -1473,7 +1474,7 @@ function ChatPreview({ script, agent }) {
             background: 'rgba(215,226,234,0.05)',
             border: '1px solid rgba(215,226,234,0.08)',
             color: 'var(--text)',
-            opacity: 0.4,
+            opacity: 0.65,
             fontSize: 12,
           }}
         >
