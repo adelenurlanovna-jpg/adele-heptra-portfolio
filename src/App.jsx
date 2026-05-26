@@ -1433,7 +1433,7 @@ function ChatPreview({ script, agent }) {
           </span>
           <span
             className="font-light"
-            style={{ fontSize: 11, color: 'var(--text)', opacity: 0.45 }}
+            style={{ fontSize: 11, color: 'var(--text)', opacity: 0.7 }}
           >
             {agentRole}
           </span>
@@ -1616,7 +1616,7 @@ function ProjectCard({ project, index, total, scrollContainerRef }) {
               <div className="flex flex-col gap-1.5">
                 <span
                   className="font-light uppercase tracking-widest"
-                  style={{ color: 'var(--text)', opacity: 0.5, fontSize: 'clamp(0.7rem, 1vw, 0.95rem)' }}
+                  style={{ color: 'var(--text)', opacity: 0.7, fontSize: 'clamp(0.7rem, 1vw, 0.95rem)' }}
                 >
                   {project.category}
                 </span>
@@ -1798,11 +1798,13 @@ function App() {
   return (
     <div style={{ background: 'var(--bg)', overflowX: 'clip' }}>
       <ThemeManager theme={t.theme} />
-      <HeroSection />
-      <MarqueeSection />
-      <AboutSection />
-      <ServicesSection />
-      <ProjectsSection />
+      <main>
+        <HeroSection />
+        <MarqueeSection />
+        <AboutSection />
+        <ServicesSection />
+        <ProjectsSection />
+      </main>
       <TweaksPanel title="Tweaks">
         <TweakSection label="Style" />
         <TweakSelect
